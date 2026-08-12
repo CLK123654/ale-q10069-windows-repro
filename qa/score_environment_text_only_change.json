@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "task_key": "id:10069",
+  "change_type": "score_environment_text_only_change",
+  "score": {
+    "total": 100,
+    "item_points": [
+      12,
+      20,
+      16,
+      14,
+      16,
+      14,
+      8
+    ],
+    "sum": 100
+  },
+  "environment_review": {
+    "os": true,
+    "software": true,
+    "code_dependency": true,
+    "cpu": true,
+    "gpu": true,
+    "disk": true,
+    "timeout": true,
+    "license_omitted": true
+  },
+  "attachment_sha256": {
+    "输入数据包.zip": "0ec7391108644fe42dca399c46c802e8b87dad3df715df349594b188fa12577b",
+    "reference.zip": "b29e3cc43db431a7cbcd0dd3f21124459de8964678b211db93e8b73a52321274",
+    "关键标准答案.xlsx": "7de37dcc7344beed6ee9c4a21a13cbbb0a0493ac4ef941b29087ecedf731c336",
+    "任务规格转化.xlsx": "21cec4922f68cbf54850c9186fece820cb4ab73eb252db551c979b5e983a3822"
+  },
+  "windows_rerun_required": false,
+  "reason": "评分与环境文字修正，不改变业务交付或四附件",
+  "prompt_coverage_audit": {
+    "result": "PASS",
+    "item_count": 7,
+    "semantic_change_required": false,
+    "note": "现有评分项覆盖Prompt交付链，未发现需要合并的重复项或遗漏要求"
+  }
+}

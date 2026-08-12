@@ -1,4 +1,7 @@
+总分100分
+
 检查项：交付路径与可读性
+分值：12分
 标准答案：完成版处理程序和三份业务文件位于output_contract.json指定的相对路径，源码可由Node.js24运行，CSV与JSONL均可解析。
 关键字段：output_contract.json中的文件名、columns和sort字段。
 容差：路径和扩展名逐字匹配合同，文本文件允许LF或CRLF行尾。
@@ -10,6 +13,7 @@
 所属层级：L1任务指令遵循层
 
 检查项：Ed25519签名载荷与验签
+分值：20分
 标准答案：canonical message按signature_contract规定的字段顺序和LF分隔符生成，递归键序JSON不改变数组顺序；签名经base64url解码后，使用事件provider对应的公钥和crypto.verify核对。
 关键字段：signature_contract、provider、delivery_id、created_at_utc、body、signature和公钥配置。
 容差：字段顺序、分隔符和公钥映射不设容差；JSON对象键序需要归一化。
@@ -21,6 +25,7 @@
 所属层级：L2软件或工具操作层
 
 检查项：接收窗口与两层幂等
+分值：16分
 标准答案：接收窗口取created_at_utc与received_at_utc的绝对秒差；历史幂等使用provider与delivery_id组合键，并以processed_at_utc到received_at_utc的时长判断窗口；批内重复由相同组合键此前已占用判定。
 关键字段：received_window_seconds、idempotency_window_hours、历史账本时间、provider和delivery_id。
 容差：时间比较精确到整秒，窗口值直接取合同字段。
@@ -32,6 +37,7 @@
 所属层级：L6领域计算与专业规则层
 
 检查项：路由、字段合同与尝试上限
+分值：14分
 标准答案：事件类型先连接端点策略，再按端点active状态、required_body_fields和该event_id的历史尝试数裁决；达到max_attempts的事件不进入队列。
 关键字段：event_type、endpoint_id、active、required_body_fields、event_id和max_attempts。
 容差：事件类型、状态和字段名按输入字面比较，尝试次数按event_id聚合。
@@ -43,6 +49,7 @@
 所属层级：L5多源关联与字段一致性层
 
 检查项：重放队列与退避时刻
+分值：16分
 标准答案：重放队列只收录裁决为queue的事件。没有历史尝试时，attempt_no取1且scheduled_at_utc取received_at_utc；有历史尝试时，下一尝试号为最大attempt_no加1，投递时刻按retry_policy和端点base_delay_seconds从最后一次尝试时刻计算。
 关键字段：event_id、endpoint_id、attempt_no、attempted_at_utc、base_delay_seconds、scheduled_at_utc和retry_policy。
 容差：时间精确到1秒；队列按scheduled_at_utc和event_id升序。
@@ -54,6 +61,7 @@
 所属层级：L7产物结构或Schema或专业对象层
 
 检查项：全量裁决台账
+分值：14分
 标准答案：裁决台账保持事件输入顺序，每条非空输入事件恰有一个终态；decision与reason按decision_order产生，queue事件与重放队列通过event_id一一对应。
 关键字段：event_id、provider、delivery_id、event_type、decision、reason、endpoint_id、next_attempt_no和scheduled_at_utc。
 容差：事件顺序按输入逐行位置，reason必须使用reason_codes中的值。
@@ -65,6 +73,7 @@
 所属层级：L9跨产物一致性与可追溯层
 
 检查项：端点维护窗口交接
+分值：8分
 标准答案：端点交接表保持endpoint_policy.csv顺序。每个端点的queued_count按重放队列的endpoint_id计数，rejected_count按裁决台账中相同event_type且decision为reject的记录计数；earliest_scheduled_at_utc取该端点队列的最早时刻，没有排队事件时为空。
 关键字段：event_type、endpoint_id、active、queued_count、rejected_count、earliest_scheduled_at_utc和max_attempts。
 容差：计数由前两份业务文件复算，时间精确到1秒，状态和上限逐字匹配端点策略。
