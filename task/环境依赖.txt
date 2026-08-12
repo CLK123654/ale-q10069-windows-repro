@@ -1,5 +1,7 @@
-操作系统：Windows11、macOS或主流64位Linux。主软件为Node.js，使用兼容Node.js24LTS的运行时；Windows11可在PowerShell中执行npm入口，不依赖WSL、容器或POSIX Shell。
+操作系统：Windows11、macOS或主流64位Linux。
+
+主软件为Node.js，使用兼容Node.js24LTS的运行时；Windows11可在PowerShell中执行npm入口，不依赖WSL、容器或POSIX Shell。
 
 Ed25519验签使用Node.js内置的crypto.verify、KeyObject和base64url解码，项目不依赖第三方npm包、数据库或浏览器。正式处理只读取本地事件、公钥、端点策略和历史账本，deliverables目录可写，不连接外部开发者平台。
 
-当前事件批次适合普通64位多核CPU和常规办公内存，不使用GPU。磁盘应能容纳输入材料、处理缓冲和三份业务文件。入口应设置有限超时；超时后检查逐行JSON解析、签名验算或文件写入是否停滞。
+当前事件批次适合普通64位多核CPU和常规办公内存，不使用GPU。磁盘应能容纳输入材料、处理缓冲和三份业务文件。需设置有限超时，覆盖本题批次处理并避免异常无限等待。
