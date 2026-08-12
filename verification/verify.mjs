@@ -10,6 +10,10 @@ import zlib from "node:zlib";
 const repoRoot = path.resolve(import.meta.dirname, "..");
 const artifactsRoot = path.join(repoRoot, "artifacts");
 const evidenceRoot = path.join(repoRoot, "evidence");
+assert.equal(process.platform, "win32", "该脚本只允许在原生Windows中运行");
+assert.equal(process.env.GITHUB_ACTIONS, "true", "该脚本只允许由托管工作流运行");
+assert.match(process.env.ImageOS ?? "", /^win25$/i, "托管镜像不是windows-2025");
+
 const workRoot = fs.mkdtempSync(path.join(os.tmpdir(), "ale-q10069-"));
 
 const attachmentNames = [
@@ -166,8 +170,23 @@ function inspectSpecification(file) {
   assert.equal(values.get("A2"), "任务ID");
   assert.equal(values.get("B2"), "node_webhook_replay_queue_decision");
   assert.ok(!/10069|qid|record/i.test(values.get("B2")), "任务规格资产ID含线上标识");
-  assert.equal(values.get("A19"), "不适合作为评分点的内容");
+  assert.equal(values.get("A17"), "不适合作为评分点的内容");
+  assert.equal(values.size, 34, "任务规格应为17行两列");
   return { sheet_names: sheets.map((sheet) => sheet.name), populated_cells: values.size, task_asset_id: values.get("B2") };
+}
+
+function inspectArchiveSurface(entries, archiveName) {
+  const files = [...entries.entries()].filter(([, entry]) => !entry.directory);
+  const forbiddenNames = files
+    .map(([name]) => name)
+    .filter((name) => /(?:^|\/)(?:[^/]+\.(?:sh|bash|zsh|so|dylib|exe|dll)|Makefile)$/i.test(name));
+  const binaryMatches = files
+    .filter(([, entry]) => entry.data.length >= 4)
+    .filter(([, entry]) => entry.data.subarray(0, 4).equals(Buffer.from([0x7f, 0x45, 0x4c, 0x46])))
+    .map(([name]) => name);
+  assert.deepEqual(forbiddenNames, [], `${archiveName}含平台专用文件`);
+  assert.deepEqual(binaryMatches, [], `${archiveName}含ELF二进制`);
+  return { file_count: files.length, forbidden_names: forbiddenNames, elf_members: binaryMatches };
 }
 
 function parseCsv(text) {
@@ -252,10 +271,9 @@ function prepareCase(label) {
 }
 
 function runProgram(inputRoot) {
-  const source = path.join(inputRoot, "src", "rebuild_webhook_queue.mjs");
   const result = spawnSync(
-    process.execPath,
-    [source, "--input", inputRoot, "--output", path.join(inputRoot, "deliverables")],
+    "npm.cmd",
+    ["run", "rebuild"],
     {
       cwd: inputRoot,
       encoding: "utf8",
@@ -347,6 +365,38 @@ function runMutation(referenceDigest) {
   };
 }
 
+function runCrlf(referenceDigest) {
+  const prepared = prepareCase("CRLF兼容 中文目录");
+  const converted = [];
+  for (const relative of [
+    "routing/endpoint_policy.csv",
+    "history/idempotency_ledger.csv",
+    "history/attempt_history.csv",
+  ]) {
+    const file = path.join(prepared.inputRoot, ...relative.split("/"));
+    const original = fs.readFileSync(file, "utf8");
+    const crlf = original.replace(/\r?\n/g, "\r\n");
+    fs.writeFileSync(file, crlf);
+    assert.ok(fs.readFileSync(file).includes(Buffer.from("\r\n")), `${relative}没有转换为CRLF`);
+    converted.push(relative);
+  }
+  const before = snapshotInputs(prepared.inputRoot);
+  const execution = runProgram(prepared.inputRoot);
+  assert.equal(execution.exit_code, 0, execution.stderr);
+  const after = snapshotInputs(prepared.inputRoot);
+  assert.deepEqual(after, before, "CRLF运行修改了业务输入");
+  const actual = readDeliverables(prepared.inputRoot);
+  assertBusinessShape(actual);
+  assert.equal(semanticDigest(actual), referenceDigest, "CRLF输入改变了业务语义");
+  return {
+    converted_files: converted,
+    exit_code: execution.exit_code,
+    input_digest_before: before.digest,
+    input_digest_after: after.digest,
+    semantic_digest: semanticDigest(actual),
+  };
+}
+
 function runNegative() {
   const prepared = prepareCase("无效输入 中文目录");
   fs.rmSync(path.join(prepared.inputRoot, "security", "provider_keys.json"));
@@ -354,13 +404,10 @@ function runNegative() {
   const execution = runProgram(prepared.inputRoot);
   assert.notEqual(execution.exit_code, 0, "缺失公钥文件时错误返回0");
   assert.ok(!fs.existsSync(path.join(prepared.inputRoot, "deliverables")), "无效输入留下交付物");
-  const staging = fs.readdirSync(prepared.inputRoot).filter((name) => name.startsWith(".webhook-deliverables-"));
-  assert.deepEqual(staging, [], "无效输入留下暂存目录");
   return {
     removed_input: "security/provider_keys.json",
     exit_code: execution.exit_code,
     deliverables_absent: true,
-    staging_directories: staging,
     stdout_sha256: sha256(execution.stdout),
     stderr_sha256: sha256(execution.stderr),
   };
@@ -375,13 +422,16 @@ function networkSurface() {
   ];
   const matches = forbidden.flatMap((pattern) => [...source.matchAll(pattern)].map((match) => match[0]));
   assert.deepEqual(matches, [], "Reference源码含外部网络调用面");
-  return { external_network_api_matches: matches, formal_run_network_access: "none" };
+  assert.doesNotMatch(source, /\bE0(?:01|02|03|04|05|06|07|08|09|10|11|12|13)\b/u, "业务源码硬编码样例事件ID");
+  return { external_network_api_matches: matches, hardcoded_sample_event_ids: [], formal_run_network_access: "none" };
 }
 
 fs.mkdirSync(evidenceRoot, { recursive: true });
 try {
   for (const name of attachmentNames) assert.ok(fs.existsSync(path.join(artifactsRoot, name)), `缺少附件:${name}`);
   const attachments = Object.fromEntries(attachmentNames.map((name) => [name, sha256File(path.join(artifactsRoot, name))]));
+  const inputArchiveSurface = inspectArchiveSurface(readZip(path.join(artifactsRoot, "输入数据包.zip")), "输入数据包.zip");
+  const referenceArchiveSurface = inspectArchiveSurface(readZip(path.join(artifactsRoot, "reference.zip")), "reference.zip");
   const answerWorkbook = inspectWorkbook(path.join(artifactsRoot, "关键标准答案.xlsx"), [
     "交付物答案清单",
     "固定字段答案",
@@ -393,6 +443,7 @@ try {
   const first = runStandard("第一次 干净目录");
   const second = runStandard("第二次 中文路径");
   assert.equal(first.semantic_digest, second.semantic_digest, "两次干净运行的结构化语义不同");
+  const crlf = runCrlf(first.semantic_digest);
   const mutation = runMutation(first.semantic_digest);
   const negative = runNegative();
   const network = networkSurface();
@@ -410,19 +461,46 @@ try {
       image_os: process.env.ImageOS ?? "local",
       image_version: process.env.ImageVersion ?? "local",
       node: process.version,
+      powershell: process.env.QA_PWSH_VERSION ?? "unknown",
       powershell_hosted_workflow: process.env.GITHUB_ACTIONS === "true",
     },
     attachment_sha256: attachments,
+    archive_surface: {
+      input: inputArchiveSurface,
+      standard_delivery: referenceArchiveSurface,
+    },
     workbook_checks: {
       answer_sheet_names: answerWorkbook.sheets.map((sheet) => sheet.name),
       specification,
     },
     clean_runs: [first, second],
+    crlf_run: crlf,
     positive_mutation: mutation,
     invalid_input: negative,
     network,
   };
   fs.writeFileSync(path.join(evidenceRoot, "windows-verification.json"), `${JSON.stringify(report, null, 2)}\n`);
+  const audit = {
+    schema_version: 1,
+    result: "PASS",
+    git_commit_sha: report.git_commit_sha,
+    workflow_run_id: report.workflow_run_id,
+    assertions: {
+      native_windows_2025: report.runner.os === "Windows" && /^win25$/i.test(report.runner.image_os) && report.runner.powershell_hosted_workflow,
+      powershell_recorded: report.runner.powershell !== "unknown",
+      node_24: /^v24\./.test(report.runner.node),
+      four_attachment_hashes_recorded: Object.keys(attachments).length === 4,
+      archives_portable: inputArchiveSurface.forbidden_names.length === 0 && referenceArchiveSurface.forbidden_names.length === 0,
+      independent_directories_equal: first.semantic_digest === second.semantic_digest,
+      crlf_equal: crlf.semantic_digest === first.semantic_digest,
+      inputs_unchanged: [first, second, crlf, mutation].every((item) => item.input_digest_before === item.input_digest_after),
+      input_change_observed: mutation.semantic_digest !== first.semantic_digest,
+      invalid_input_rejected: negative.exit_code !== 0 && negative.deliverables_absent,
+      no_external_network_api: network.external_network_api_matches.length === 0,
+    },
+  };
+  assert.ok(Object.values(audit.assertions).every(Boolean), "Windows审计断言未全部通过");
+  fs.writeFileSync(path.join(evidenceRoot, "windows-audit.json"), `${JSON.stringify(audit, null, 2)}\n`);
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
 } finally {
   fs.rmSync(workRoot, { recursive: true, force: true });

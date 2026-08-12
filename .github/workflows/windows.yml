@@ -25,7 +25,9 @@ jobs:
 
       - name: Run independent verification
         shell: pwsh
-        run: node verification/verify.mjs
+        run: |
+          $env:QA_PWSH_VERSION = $PSVersionTable.PSVersion.ToString()
+          node verification/verify.mjs
 
       - name: Upload Windows evidence
         if: always()
@@ -34,4 +36,4 @@ jobs:
           name: q10069-windows-evidence
           path: evidence/
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 1

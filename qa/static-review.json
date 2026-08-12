@@ -1,27 +1,44 @@
 {
   "schema_version": 1,
   "result": "PASS",
+  "scanned_sources": 246,
+  "violations": [],
+  "answer_sheets": [
+    "交付物答案清单",
+    "固定字段答案",
+    "固定集合答案",
+    "固定数值答案",
+    "允许变体答案"
+  ],
+  "specification_sheets": [
+    "任务规格转化"
+  ],
+  "task_spec_row_count": 17,
+  "task_spec_column_count": 2,
   "task_asset_id": "node_webhook_replay_queue_decision",
-  "humanizer_zh": {
-    "directness": 10,
-    "rhythm": 9,
-    "trust": 10,
-    "authenticity": 9,
-    "conciseness": 9,
-    "total": 47,
-    "minimum": 45
-  },
-  "natural_language": {
-    "forbidden_quote_characters": 0,
-    "mixed_boundary_spaces": 0,
-    "authoring_process_terms_in_task_fields": 0
-  },
-  "contract": {
-    "answer_sheet_count": 5,
-    "specification_columns": 2,
-    "business_input_count": 7,
-    "reference_delivery_count": 4,
-    "cross_task_similarity_threshold_hits": 0,
-    "online_ai_detector_used_as_conclusion": false
-  }
+  "task_asset_id_valid": true,
+  "forbidden_spec_labels": [],
+  "declared_delivery_paths": [
+    "deliverables/endpoint_handoff.csv",
+    "deliverables/intake_decisions.csv",
+    "deliverables/replay_queue.jsonl",
+    "src/rebuild_webhook_queue.mjs"
+  ],
+  "reference_paths": [
+    "deliverables/endpoint_handoff.csv",
+    "deliverables/intake_decisions.csv",
+    "deliverables/replay_queue.jsonl",
+    "src/rebuild_webhook_queue.mjs"
+  ],
+  "business_inputs": [
+    "input_data/incoming/webhook_events.jsonl",
+    "input_data/security/provider_keys.json",
+    "input_data/routing/endpoint_policy.csv",
+    "input_data/history/idempotency_ledger.csv",
+    "input_data/history/attempt_history.csv",
+    "input_data/rules/intake_contract.json",
+    "input_data/rules/output_contract.json"
+  ],
+  "business_inputs_present": true,
+  "online_ai_detector_used_as_conclusion": false
 }

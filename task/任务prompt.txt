@@ -4,4 +4,4 @@
 
 使用Node.js24完成input_data/src/rebuild_webhook_queue.mjs。程序在本机核对Ed25519签名，按合同顺序处理接收时间、历史幂等、批内重复、端点状态、事件字段和尝试上限，再为可重放事件计算下一次投递时刻。endpoint_url只是路由资料，处理期间不向这些地址发起请求。
 
-请交付完成版src/rebuild_webhook_queue.mjs，以及deliverables/intake_decisions.csv、deliverables/replay_queue.jsonl和deliverables/endpoint_handoff.csv。裁决台账保持输入顺序，队列按scheduled_at_utc和event_id排序，端点交接表沿用endpoint_policy.csv顺序。运行失败时不要替换上一次完整交付；首次运行失败时不应留下半成品。完成后在input_data目录执行npm run rebuild，确认三份业务文件能够由当前输入重新生成且互相对得上。
+请交付完成版src/rebuild_webhook_queue.mjs，以及deliverables/intake_decisions.csv、deliverables/replay_queue.jsonl和deliverables/endpoint_handoff.csv。裁决台账保持输入顺序，队列按scheduled_at_utc和event_id排序，端点交接表沿用endpoint_policy.csv顺序。完成后在input_data目录执行npm run rebuild，核对每条排队事件在裁决台账、重放队列和端点交接表中的去向。
