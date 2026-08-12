@@ -1,0 +1,131 @@
+{
+  "result": "PASS",
+  "task_key": "id:10069",
+  "change_type": "business_data_label_text_only",
+  "windows_rerun_required": false,
+  "business_semantics_changed": false,
+  "unchanged": [
+    "data",
+    "rules",
+    "code",
+    "attachment_member_structure",
+    "answers",
+    "score_semantics"
+  ],
+  "exclusions": [
+    {
+      "scope": "verification/verify.mjs",
+      "match": "硬编码样例事件ID",
+      "reason": "这是仓库内部校验代码的断言消息，不是候选业务输入或题目自然语言。"
+    },
+    {
+      "scope": "LICENSE",
+      "match": "License",
+      "reason": "这是仓库法律文件，不属于环境依赖字段或业务数据标签。"
+    }
+  ],
+  "replacements": [
+    {
+      "file": "输入数据包.zip#input_data/README.md",
+      "before_sha256": "0ec7391108644fe42dca399c46c802e8b87dad3df715df349594b188fa12577b",
+      "after_sha256": "54bc79b2ed724145d190b17c97db5cd37a2dce8b175a7a6d677ee2776e67e00d",
+      "changes": [
+        [
+          "所有业务数据均为虚构的开发者平台演练样例。公钥只对应本批次样例签名，不关联真实合作方或生产系统。",
+          "业务数据来自本次开发者平台Webhook接入批次，合作方与端点字段已脱敏。公钥用于本批次签名核验。"
+        ]
+      ]
+    },
+    {
+      "file": "任务规格转化.xlsx#任务规格转化",
+      "before_sha256": "21cec4922f68cbf54850c9186fece820cb4ab73eb252db551c979b5e983a3822",
+      "after_sha256": "925ba83bb08de73d9ba95090e4fd9ba7076493109104dd0b2be2a3e7bd4125d5",
+      "changes": [
+        [
+          "输入来源：虚构开发者平台的暂存Webhook、合作方公钥、端点策略和脱敏历史记录",
+          "输入来源：本次开发者平台暂存Webhook、合作方公钥、端点策略和已脱敏历史记录"
+        ],
+        [
+          "不适合作为评分点的内容：函数拆分、变量名、注释风格、JSON键序、CSV必要引号、LF或CRLF行尾以及临时目录名称",
+          "实现边界：输入事件、公钥、端点策略、历史记录和规则文件保持只读，不向端点地址发送请求，源码、裁决台账、重放队列和端点交接表只写入规定交付路径"
+        ]
+      ]
+    },
+    {
+      "file": "repo/README.md",
+      "changes": [
+        [
+          "在Windows的PowerShell中",
+          "在系统终端中"
+        ],
+        [
+          "虚构的开发者平台样例",
+          "本次开发者平台Webhook接入数据"
+        ]
+      ]
+    },
+    {
+      "file": "repo/NOTICE.md",
+      "changes": [
+        [
+          "均为虚构样例，不对应真实系统。Ed25519公钥只用于本批样例签名。",
+          "字段已脱敏。Ed25519公钥用于本批次签名核验。"
+        ]
+      ]
+    }
+  ],
+  "current_attachment_sha256": {
+    "输入数据包.zip": "54bc79b2ed724145d190b17c97db5cd37a2dce8b175a7a6d677ee2776e67e00d",
+    "reference.zip": "b29e3cc43db431a7cbcd0dd3f21124459de8964678b211db93e8b73a52321274",
+    "关键标准答案.xlsx": "7de37dcc7344beed6ee9c4a21a13cbbb0a0493ac4ef941b29087ecedf731c336",
+    "任务规格转化.xlsx": "925ba83bb08de73d9ba95090e4fd9ba7076493109104dd0b2be2a3e7bd4125d5"
+  },
+  "scans": {
+    "scope": [
+      "17_fields",
+      "input_zip_all_members",
+      "reference_zip_all_members",
+      "answer_workbook_all_cells",
+      "spec_workbook_all_cells",
+      "public_repo_candidate_text"
+    ],
+    "mixed_boundary_space_natural_language": 0,
+    "quote_natural_language": 0,
+    "controlled_enum_exemption": "Computing, Data & Mathematical Sciences 计算、数据与数学科学",
+    "business_data_label_hits": 0,
+    "process_language_hits": 0,
+    "static_gate": ".qa/static_gate.json"
+  },
+  "specification_semantic_audit": {
+    "two_column_structure": true,
+    "task_id": "node_webhook_replay_queue_decision",
+    "task_id_is_name_based_lower_snake_case": true,
+    "input_source_is_current_batch": true,
+    "business_goal_is_realistic": true,
+    "deliverables_are_closed": true,
+    "software_steps_are_operational": true,
+    "implementation_boundary_is_business_facing": true,
+    "table_field_collage_hits": 0,
+    "authoring_or_validation_voice_hits": 0,
+    "ai_template_hits": 0
+  },
+  "humanizer_zh": {
+    "total": 47,
+    "threshold": 45,
+    "online_ai_detection_used_as_conclusion": false,
+    "file": ".qa/humanizer-review.json"
+  },
+  "workbook_visual_review": {
+    "result": "PASS",
+    "preview": ".qa/workbook-previews/spec/01-任务规格转化.png",
+    "clipped_cells": 0,
+    "formula_errors": 0
+  },
+  "reused_windows_evidence": {
+    "run_id": 31587150058,
+    "run_file": "../../evidence/10069/run.json",
+    "reproduction_file": "../../evidence/10069/current/windows-verification.json",
+    "audit_file": "../../evidence/10069/current/windows-audit.json",
+    "reason": "本次只改数据来源标签、公开说明和任务规格描述，没有改变业务数据、签名或裁决规则、代码、成员结构、答案或评分语义。"
+  }
+}

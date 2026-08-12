@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "skill": "humanizer-zh",
+  "result": "PASS",
+  "reviewed_scopes": [
+    "任务名称",
+    "任务概要",
+    "任务prompt",
+    "关键动作",
+    "评分表",
+    "环境依赖",
+    "软件步骤",
+    "输入材料中的自然语言",
+    "标准交付中的用户可见文字",
+    "关键标准答案工作簿全部自然语言",
+    "任务规格工作簿全部自然语言"
+  ],
+  "scores": {
+    "直接性": 10,
+    "节奏": 9,
+    "信任度": 10,
+    "真实性": 9,
+    "精炼度": 9,
+    "total": 47
+  },
+  "minimum_total": 45,
+  "notes": [
+    "题面从维护窗口中的暂存事件切入，明确安全值班、重放服务和端点负责人怎样使用三份业务文件。",
+    "签名、幂等和退避细节来自输入合同，正文没有伪造来源，也没有用宣传语替代业务条件。",
+    "删除了旧版中与业务无关的验收指令，保留Node.js运行所需的真实约束。",
+    "标题、开场和动作句式均按本题业务对象重写，未把线上AI感检测字段作为判断依据。"
+  ],
+  "online_ai_detection_used_as_conclusion": false,
+  "reviewed_artifacts_sha256": {
+    "任务名称.txt": "f131cab0c19a48074e18ab7a80309ce72a64dee7246ccd84a333be25fe7eab38",
+    "任务概要.txt": "5301703f838da6a6997f5f68897432561840ac2d38efdb3be353df8db8473d6e",
+    "任务prompt.txt": "9db9d92e8a21016a2113f4d87b45a8ab85a6ed8ba3a3261098970331270d83a1",
+    "关键动作.txt": "424c00254f7e7085e3534eb603692cbf2ac0a86b52179cdf3d6e8904ca57a1e1",
+    "评分表.txt": "b88417dd989d4ddf082b937f891f860d89d7a835a66126ccfe90d51ebb0c977a",
+    "环境依赖.txt": "3db8372388d538363273ec4ffd33c8a28b308a4ac4edca6ef19bdad15232fb21",
+    "相关专业软件的关键步骤.txt": "1ecc36e558f13bbdbe20c2d258f473800c0134600abbf41291a014fcb31d4548",
+    "task_fields.json": "ee0395f593eff4c31fbbd2c0d2a322ede316d02908f20bd553f0f8db70cb042b",
+    "ALE-专家数据作业表.csv": "165b9cb5f074a75a1b5ca4e3c16e818a01d98ba71b84ce9a7047c2f1953668ef",
+    "输入数据包.zip": "54bc79b2ed724145d190b17c97db5cd37a2dce8b175a7a6d677ee2776e67e00d",
+    "reference.zip": "b29e3cc43db431a7cbcd0dd3f21124459de8964678b211db93e8b73a52321274",
+    "关键标准答案.xlsx": "7de37dcc7344beed6ee9c4a21a13cbbb0a0493ac4ef941b29087ecedf731c336",
+    "任务规格转化.xlsx": "925ba83bb08de73d9ba95090e4fd9ba7076493109104dd0b2be2a3e7bd4125d5"
+  }
+}
