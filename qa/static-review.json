@@ -3,6 +3,7 @@
   "result": "PASS",
   "scanned_sources": 246,
   "violations": [],
+  "score_answer_leakage_matches": [],
   "answer_sheets": [
     "交付物答案清单",
     "固定字段答案",
