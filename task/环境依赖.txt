@@ -1,6 +1,6 @@
 操作系统： Windows11、macOS或主流64位Linux。
 
-主软件为Node.js，使用兼容Node.js24LTS的运行时；Windows11可在PowerShell中执行npm入口，不依赖WSL、容器或POSIX Shell。
+主软件为Node.js，使用兼容Node.js24LTS的运行时；Windows11可在PowerShell中执行npm入口。
 
 Ed25519验签使用Node.js内置的crypto.verify、KeyObject和base64url解码，项目不依赖第三方npm包、数据库或浏览器。正式处理只读取本地事件、公钥、端点策略和历史账本，deliverables目录可写，不连接外部开发者平台。
 
