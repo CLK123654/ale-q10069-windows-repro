@@ -12,7 +12,7 @@ const artifactsRoot = path.join(repoRoot, "artifacts");
 const evidenceRoot = path.join(repoRoot, "evidence");
 assert.equal(process.platform, "win32", "该脚本只允许在原生Windows中运行");
 assert.equal(process.env.GITHUB_ACTIONS, "true", "该脚本只允许由托管工作流运行");
-assert.match(process.env.ImageOS ?? "", /^win25$/i, "托管镜像不是windows-2025");
+assert.match(process.env.ImageOS ?? "", /^win25(?:-|$)/i, "托管镜像不是windows-2025");
 
 const workRoot = fs.mkdtempSync(path.join(os.tmpdir(), "ale-q10069-"));
 
@@ -277,6 +277,7 @@ function runProgram(inputRoot) {
     {
       cwd: inputRoot,
       encoding: "utf8",
+      shell: true,
       windowsHide: true,
       timeout: 60_000,
       env: { ...process.env, HTTP_PROXY: "", HTTPS_PROXY: "", ALL_PROXY: "", NO_PROXY: "*" },
@@ -486,7 +487,7 @@ try {
     git_commit_sha: report.git_commit_sha,
     workflow_run_id: report.workflow_run_id,
     assertions: {
-      native_windows_2025: report.runner.os === "Windows" && /^win25$/i.test(report.runner.image_os) && report.runner.powershell_hosted_workflow,
+      native_windows_2025: report.runner.os === "Windows" && /^win25(?:-|$)/i.test(report.runner.image_os) && report.runner.powershell_hosted_workflow,
       powershell_recorded: report.runner.powershell !== "unknown",
       node_24: /^v24\./.test(report.runner.node),
       four_attachment_hashes_recorded: Object.keys(attachments).length === 4,
