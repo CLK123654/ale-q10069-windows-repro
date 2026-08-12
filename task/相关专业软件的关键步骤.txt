@@ -1,0 +1,7 @@
+1. 使用Node.js逐行读取incoming/webhook_events.jsonl，并加载security/provider_keys.json中的Ed25519公钥对象。
+2. 按rules/intake_contract.json生成canonical message，通过crypto.verify核对每条分离签名并保留裁决所需状态。
+3. 解析routing/endpoint_policy.csv、history/idempotency_ledger.csv和history/attempt_history.csv，建立端点、历史幂等键和事件尝试索引。
+4. 依照decision_order短路处理时间窗口、两层幂等、事件路由、端点启停、必需字段和max_attempts。
+5. 根据最后一次attempted_at_utc、next_attempt_no和base_delay_seconds计算scheduled_at_utc，并按合同顺序生成重放队列。
+6. 使用rules/output_contract.json写出intake_decisions.csv、replay_queue.jsonl和endpoint_handoff.csv，完成版源码保存在src/rebuild_webhook_queue.mjs。
+7. 在input_data目录执行npm run rebuild，核对裁决、队列和端点交接表中的事件集合与数量关系。

@@ -1,0 +1,7 @@
+梳理事件批次、公钥、端点策略、幂等账本、历史尝试和两份业务合同之间的字段关系。
+使用Node.js crypto按合同生成canonical message并完成Ed25519分离签名核对。
+依照intake_contract.json的裁决顺序处理时间窗口、历史幂等、批内重复、路由状态、字段完整性和尝试上限。
+结合attempt_history.csv与endpoint_policy.csv计算下一尝试号和指数退避时刻。
+生成全量裁决台账与重放队列，使event_id、delivery_id和endpoint_id能够交叉定位。
+按端点策略汇总排队数、拒绝数和最早投递时刻，形成维护窗口交接表。
+使用原子目录替换完整交付，避免输入错误或写出中断覆盖上一次可用结果。

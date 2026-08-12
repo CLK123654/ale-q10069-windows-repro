@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "result": "PASS",
+  "task_asset_id": "node_webhook_replay_queue_decision",
+  "humanizer_zh": {
+    "directness": 10,
+    "rhythm": 9,
+    "trust": 10,
+    "authenticity": 9,
+    "conciseness": 9,
+    "total": 47,
+    "minimum": 45
+  },
+  "natural_language": {
+    "forbidden_quote_characters": 0,
+    "mixed_boundary_spaces": 0,
+    "authoring_process_terms_in_task_fields": 0
+  },
+  "contract": {
+    "answer_sheet_count": 5,
+    "specification_columns": 2,
+    "business_input_count": 7,
+    "reference_delivery_count": 4,
+    "cross_task_similarity_threshold_hits": 0,
+    "online_ai_detector_used_as_conclusion": false
+  }
+}
