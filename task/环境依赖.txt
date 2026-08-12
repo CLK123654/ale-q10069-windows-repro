@@ -1,5 +1,5 @@
-本任务支持64位Windows11、macOS和Linux，主软件为Node.js24LTS。Windows11可在PowerShell中进入input_data后执行npm run rebuild。Ed25519验签由Node.js crypto.verify、KeyObject和base64url解码完成，字符串比对或外部预计算结果不能代替这些运行时语义。
+操作系统：Windows11、macOS或主流64位Linux。主软件为Node.js，使用兼容Node.js24LTS的运行时；Windows11可在PowerShell中执行npm入口，不依赖WSL、容器或POSIX Shell。
 
-辅助工具为PowerShell或系统终端。项目不依赖第三方npm包，也不需要数据库或浏览器。正式处理无需联网，endpoint_url仅供路由交接使用。输入材料为虚构的开发者平台批次和脱敏策略样例，不含真实账号、密钥或客户资料。
+Ed25519验签使用Node.js内置的crypto.verify、KeyObject和base64url解码，项目不依赖第三方npm包、数据库或浏览器。正式处理只读取本地事件、公钥、端点策略和历史账本，deliverables目录可写，不连接外部开发者平台。
 
-普通64位办公电脑可处理当前样例，建议准备1个CPU核心、1GB内存和200MB可写磁盘，GPU无要求。执行权限仅包括读取input_data和在同一目录写入deliverables，单批处理最长运行30秒。最容易出错的是canonical message的字段顺序或换行不一致、批内幂等键占用过早，以及指数退避的幂次偏移。
+当前事件批次适合普通64位多核CPU和常规办公内存，不使用GPU。磁盘应能容纳输入材料、处理缓冲和三份业务文件。入口应设置有限超时；超时后检查逐行JSON解析、签名验算或文件写入是否停滞。
